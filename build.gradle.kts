@@ -1,5 +1,8 @@
 plugins {
     kotlin("jvm") version "1.9.23"
+    java
+    id("org.springframework.boot") version "2.7.0"
+    id("io.spring.dependency-management") version "1.1.0"
 }
 
 group = "org.tennismate.com"
@@ -10,6 +13,8 @@ repositories {
 }
 
 dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     testImplementation(kotlin("test"))
 }
 
