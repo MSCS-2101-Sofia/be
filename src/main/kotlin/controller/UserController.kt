@@ -1,17 +1,22 @@
 package org.tennismate.com.controller
 
+import com.google.gson.Gson
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
+import org.tennismate.com.common.data.LoginRequest
+import org.tennismate.com.common.data.UserRepository
 import org.tennismate.com.service.MatchingService
 import java.sql.SQLException
 import javax.servlet.http.HttpServletRequest
+import kotlin.math.log
 
 @RestController
 class UserController @Autowired constructor(
-    //private val userRepository: UserRepository,
+    private val userRepository: UserRepository,
     matchingService: MatchingService
 ) {
     //TODO: login use JWT
@@ -21,14 +26,18 @@ class UserController @Autowired constructor(
     }
 
     @PostMapping("/api/login")
-    fun postLogin(request: HttpServletRequest): ResponseEntity<String> {
+    fun postLogin(
+        @RequestBody(required = true) loginRequest: String,
+        request: HttpServletRequest): ResponseEntity<String> {
         try {
-            val username = request.getParameter("username")
-            val pwd = request.getParameter("password_md5")
-            //val user = userRepository.findByName(username)
-            //if(user.size == 1 && user[0].passwordMD5 == pwd) {
-            //return ResponseEntity.status(HttpStatus.OK).body("successfully get user info")
-            //}
+            val gson = Gson()
+            val json = gson.fromJson(loginRequest, LoginRequest::class.java)!!
+            val username = json.username
+            val pwd = json.password_md5
+            val user = userRepository.findByUsername(username)
+            if(user.size == 1 && user[0].passwordMD5 == pwd) {
+                return ResponseEntity.status(HttpStatus.OK).body("successfully get user info")
+            }
         } catch (sqlException: SQLException) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("error retrieving user information from user database")
         }

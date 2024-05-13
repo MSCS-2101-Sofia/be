@@ -2,6 +2,7 @@ package org.tennismate.com.common.data
 
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
+import java.io.Serializable
 import java.time.LocalDateTime
 import javax.persistence.*
 
@@ -16,7 +17,7 @@ data class User(
     var addressLine2: String? = null,
     var zipCode: String,
     var passwordMD5: String
-) {
+): Serializable {
     @CreationTimestamp
     @Column(updatable = false, insertable = false)
     var createdAt: LocalDateTime? = null
