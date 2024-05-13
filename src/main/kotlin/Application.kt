@@ -11,8 +11,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 @SpringBootApplication
 @EnableConfigurationProperties
-@EnableJpaRepositories(value = ["org.tennismate.com"])
-@EntityScan(value = ["org.tennismate.com"])
+@EnableJpaRepositories(value = ["org.tennismate.com.common.data"])
+@EntityScan(value = ["org.tennismate.com.common.data"])
 open class Application
 
 fun main(args: Array<String>) {

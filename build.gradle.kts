@@ -1,6 +1,5 @@
 plugins {
     kotlin("jvm") version "1.9.23"
-    java
     id("org.springframework.boot") version "2.7.0"
     id("io.spring.dependency-management") version "1.1.0"
 }
@@ -16,6 +15,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.postgresql:postgresql")
+    implementation(kotlin("reflect"))
     testImplementation(kotlin("test"))
 }
 
