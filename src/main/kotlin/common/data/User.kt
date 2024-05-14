@@ -10,13 +10,14 @@ import javax.persistence.*
 @Table(name = "users")
 data class User(
     var username: String,
-    var gender: String,
+    var passwordMD5: String,
+    var gender: String? = null,
+    var tennisLevel: String? = null,
     var email: String? = null,
-    var phone: String,
-    var addressLine1: String,
+    var phoneNumber: String? = null,
+    var addressLine1: String? = null,
     var addressLine2: String? = null,
-    var zipCode: String,
-    var passwordMD5: String
+    var zipCode: String? = null,
 ): Serializable {
     @CreationTimestamp
     @Column(updatable = false, insertable = false)
