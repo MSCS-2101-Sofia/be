@@ -11,16 +11,13 @@ import org.springframework.web.bind.annotation.RestController
 import org.tennismate.com.common.data.LoginRequest
 import org.tennismate.com.common.data.RegisterRequest
 import org.tennismate.com.common.data.UserRepository
-import org.tennismate.com.service.MatchingService
 import java.sql.SQLException
 import javax.servlet.http.HttpServletRequest
 
 @RestController
 class UserController @Autowired constructor(
     private val userRepository: UserRepository,
-    matchingService: MatchingService
 ) {
-    //TODO: register & login use JWT
     @PostMapping("/api/register")
     fun postRegister(
         @RequestBody(required = true) registerRequest: String,
@@ -35,6 +32,7 @@ class UserController @Autowired constructor(
         return ResponseEntity.status(HttpStatus.OK).body("User successfully registered")
     }
 
+    //TODO: JWT and return user token
     @PostMapping("/api/login")
     fun postLogin(
         @RequestBody(required = true) loginRequest: String,
