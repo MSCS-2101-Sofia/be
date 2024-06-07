@@ -1,37 +1,49 @@
 package org.tennismate.com.controller
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
-import org.tennismate.com.common.data.ListOfUsersResponse
+import org.tennismate.com.common.data.MatchAction
+import org.tennismate.com.common.data.MatchStatus
 import org.tennismate.com.common.data.UserRepository
-import javax.servlet.http.HttpServletRequest
+import org.tennismate.com.service.MatchingService
 
 @RestController
+@RequestMapping("/api/match")
 class MatchingController @Autowired constructor(
-    val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val matchingService: MatchingService
 ) {
-    @GetMapping("/ping")
-    fun getTest(): String {
-        return "ping"
+    private var displayResults = listOf<MatchResponse>()
+    data class MatchGetUserRequest(val username: String)
+    data class MatchResponse(
+        val id: Long?,
+        val username: String,
+        val city: String?,
+        val tennisLevel: String?,
+        val gender: String?,
+        val phoneNumber: String?,
+        var matchStatus: MatchStatus
+    )
+    data class MatchPatchRequest(val action: MatchAction)
+
+    @GetMapping("/getMatch")
+    fun getMatch(@RequestBody matchGetUserRequest: MatchGetUserRequest): ResponseEntity<List<MatchResponse>> {
+        val currentUser = SecurityContextHolder.getContext().authentication?.principal
+        val currentUsername = if (currentUser is UserDetails) currentUser.username else currentUser.toString()
+        val user = userRepository.findByUsername(currentUsername)!!
+        val response = matchingService.getMatch(user)
+        displayResults = response
+        return ResponseEntity.ok(response)
     }
 
-    //TODO: currently this returns all registered users,
-    @GetMapping("/api/users")
-    fun getUsers(): ResponseEntity<String> {
-        val recommendedUsers = userRepository.findAll()
-        val responsePOJO = ListOfUsersResponse.fromListOfUser(recommendedUsers)
-        return ResponseEntity.status(HttpStatus.OK).body(ObjectMapper().writeValueAsString(responsePOJO))
-    }
-
-    @PatchMapping("/api/match-request/{id}")
-    fun patchMatchRequest(
-        @PathVariable(value = "id", required = true) userId: String,
-        request: HttpServletRequest,
-    ): ResponseEntity<String> {
-        //TODO: request parsing using ObjectMapper
-        return ResponseEntity.status(HttpStatus.OK).body(null)
+    @PatchMapping("/updateMatch/{id}")
+    fun updateMatch(@RequestBody matchPatchRequest: MatchPatchRequest, @PathVariable id: Long): ResponseEntity<MatchResponse> {
+        val currentUser = SecurityContextHolder.getContext().authentication?.principal
+        val currentUsername = if (currentUser is UserDetails) currentUser.username else currentUser.toString()
+        val response = matchingService.updateMatch(currentUsername, displayResults, id, matchPatchRequest.action )
+        return ResponseEntity.ok(response)
     }
 }
